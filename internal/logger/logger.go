@@ -9,11 +9,15 @@ func NewLogger() *Logger {
 	return &Logger{}
 }
 
+// Notify обрабатывает входящее событие и выводит его в стандартный вывод.
+// Формат вывода: [Время] Сообщение
+// Пример: "[12:30:45.000] The competitor(123) registered"
 func (j *Logger) Notify(event events.EventData) {
 	message := generateMessage(event)
 	fmt.Printf("[%s] %s\n", event.Time.Format("15:04:05.000"), message)
 }
 
+// generateMessage преобразует сырое событие в читаемое текстовое сообщение
 func generateMessage(event events.EventData) string {
 	var message string
 

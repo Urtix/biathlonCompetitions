@@ -7,11 +7,13 @@ import (
 	"time"
 )
 
+// Форматы времени для парсинга
 const (
-	timeFormat1 = "15:04:05.000"
-	timeFormat2 = "15:04:05"
+	timeFormat1 = "15:04:05.000" // Формат с миллисекундами (HH:MM:SS.ммм)
+	timeFormat2 = "15:04:05"     // Формат без миллисекунд (HH:MM:SS)
 )
 
+// ParseStrTimeToTime преобразует time.Time.String() в объект time.Time
 func ParseStrTimeToTime(strTime string) (time.Time, error) {
 	t, err := time.Parse(timeFormat1, strTime)
 	if err == nil {
@@ -21,22 +23,26 @@ func ParseStrTimeToTime(strTime string) (time.Time, error) {
 	return time.Parse(timeFormat2, strTime)
 }
 
+// ParseStrTimeToDuration преобразует time.Time.String() в time.Duration
 func ParseStrTimeToDuration(strTime string) (time.Duration, error) {
 	parts := strings.Split(strTime, ":")
 	if len(parts) != 3 {
 		return 0, fmt.Errorf("expected HH:MM:SS format, got: %s", strTime)
 	}
 
+	// Парсинг и валидация часов
 	hours, err := strconv.Atoi(parts[0])
 	if err != nil || hours < 0 {
 		return 0, fmt.Errorf("invalid hours: %w", err)
 	}
 
+	// Парсинг и валидация минут
 	minutes, err := strconv.Atoi(parts[1])
 	if err != nil || minutes < 0 || minutes >= 60 {
 		return 0, fmt.Errorf("invalid minutes: %w", err)
 	}
 
+	// Парсинг и валидация секунд
 	seconds, err := strconv.Atoi(parts[2])
 	if err != nil || seconds < 0 || seconds >= 60 {
 		return 0, fmt.Errorf("invalid seconds: %w", err)
@@ -47,6 +53,7 @@ func ParseStrTimeToDuration(strTime string) (time.Duration, error) {
 		time.Duration(seconds)*time.Second, nil
 }
 
+// ParseDurationToStrTime преобразует time.Duration в строку формата HH:MM:SS.ммм.
 func ParseDurationToStrTime(d time.Duration) string {
 	hours := int(d.Hours())
 	minutes := int(d.Minutes()) % 60
@@ -60,6 +67,10 @@ func ParseDurationToStrTime(d time.Duration) string {
 	)
 }
 
+// ParseStrDurationToStrTime преобразует time.Duration.String() в time.Time.String()
+// Обрабатывает специальные случаи:
+//   - "NotStarted" и "NotFinished" возвращаются как есть
+//   - Некорректные значения возвращают "InvalidTime"
 func ParseStrDurationToStrTime(timeStr string) string {
 	if timeStr == "NotStarted" || timeStr == "NotFinished" {
 		return timeStr

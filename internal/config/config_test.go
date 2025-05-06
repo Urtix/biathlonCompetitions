@@ -8,7 +8,6 @@ import (
 )
 
 func TestConfig_LoadConfig(t *testing.T) {
-	// Создаем временные тестовые файлы
 	createTestFile := func(content string) string {
 		tmpFile, err := os.CreateTemp("", "test-config-*.json")
 		if err != nil {

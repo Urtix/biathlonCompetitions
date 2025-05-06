@@ -5,39 +5,45 @@ import (
 	"time"
 )
 
+// lapInfo содержит данные о пройденном круге
 type lapInfo struct {
-	duration time.Duration
-	speed    float64
+	duration time.Duration // Затраченное время
+	speed    float64       // Средняя скорость (м/с)
 }
 
+// mainLaps хранит информацию об основных кругах гонки
 type mainLaps struct {
-	totalDuration string
-	startTime     time.Time // время старта для текущего круга, а не общее
-	info          []lapInfo
+	totalDuration string    // Общее время гонки (строковое представление)
+	startTime     time.Time // Время старта текущего круга
+	info          []lapInfo // Информация по каждому пройденному кругу
 }
 
+// penaltyLaps - штрафные круги участника
 type penaltyLaps struct {
-	currentLap int
-	startTime  time.Time
-	info       lapInfo
+	currentLap int       // Номер текущего штрафного круаг
+	startTime  time.Time // Время начала штрафного круга
+	info       lapInfo   // Общая информаци о штрафных кругах
 }
 
+// shoot отслеживает результаты стрельбы
 type shoot struct {
-	currentTargets [5]int
-	hitCount       int
-	shotCount      int
+	currentTargets [5]bool // Текущие мишени (true - поражена, false - нет)
+	hitCount       int     // Общее количество попаданий
+	shotCount      int     // Всего произведено выстрелов
 }
 
+// competitor содержит полное состояние участника гонки
 type competitor struct {
-	id           int
-	disqualified bool
-	mainLaps     mainLaps
-	penaltyLaps  penaltyLaps
-	shoot        shoot
+	id           int         // Уникальный идентификатор
+	disqualified bool        // Флаг дисквалификации
+	mainLaps     mainLaps    // Основные круги
+	penaltyLaps  penaltyLaps // Штрафные круги
+	shoot        shoot       // Результаты стрельбы
 }
 
-// Tracker реализует Observer
-type Tracker struct {
-	config      config.Config
-	competitors map[int]*competitor
+// Handler реализует паттерн Observer для отслеживания событий гонки
+// Хранит состояние всех участников и конфигурацию соревнований
+type Handler struct {
+	config      config.Config       // Параметры гонки
+	competitors map[int]*competitor // Участники (ID → состояние)
 }

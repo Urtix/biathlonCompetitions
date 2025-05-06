@@ -20,7 +20,7 @@ func TestHandler_Notify(t *testing.T) {
 	tests := []struct {
 		name     string
 		events   []events.EventData
-		validate func(*testing.T, *Tracker)
+		validate func(*testing.T, *Handler)
 	}{
 		{
 			name: "Shooting first firing lines",
@@ -30,7 +30,7 @@ func TestHandler_Notify(t *testing.T) {
 				{ID: events.EventTargetHit, CompetitorID: 1, Params: "1"},
 				{ID: events.EventLeftFiringRange, CompetitorID: 1},
 			},
-			validate: func(t *testing.T, tr *Tracker) {
+			validate: func(t *testing.T, tr *Handler) {
 				comp := tr.competitors[1]
 				if comp.shoot.hitCount != 1 {
 					t.Errorf("Expected 1 hit, got %d", comp.shoot.hitCount)
@@ -50,7 +50,7 @@ func TestHandler_Notify(t *testing.T) {
 				{ID: events.EventOnFiringRange, CompetitorID: 1, Params: "2"},
 				{ID: events.EventLeftFiringRange, CompetitorID: 1},
 			},
-			validate: func(t *testing.T, tr *Tracker) {
+			validate: func(t *testing.T, tr *Handler) {
 				comp := tr.competitors[1]
 				if comp.shoot.hitCount != 1 {
 					t.Errorf("Expected 1 hit, got %d", comp.shoot.hitCount)
@@ -67,7 +67,7 @@ func TestHandler_Notify(t *testing.T) {
 				{ID: events.EventEnteredPenalty, CompetitorID: 3, Time: parseTime("10:00:00.000")},
 				{ID: events.EventLeftPenalty, CompetitorID: 3, Time: parseTime("10:00:20.000")},
 			},
-			validate: func(t *testing.T, tr *Tracker) {
+			validate: func(t *testing.T, tr *Handler) {
 				comp := tr.competitors[3]
 				if comp.penaltyLaps.info.duration != 20*time.Second {
 					t.Errorf("Expected 30s penalty, got %v", comp.penaltyLaps.info.duration)
@@ -85,7 +85,7 @@ func TestHandler_Notify(t *testing.T) {
 				{ID: events.EventStarted, CompetitorID: 1, Time: parseTime("10:00:01.000")},
 				{ID: events.EventCannotContinue, CompetitorID: 1},
 			},
-			validate: func(t *testing.T, tr *Tracker) {
+			validate: func(t *testing.T, tr *Handler) {
 				comp := tr.competitors[1]
 
 				if comp.mainLaps.totalDuration != "NotFinished" {
@@ -114,7 +114,7 @@ func TestHandler_Notify(t *testing.T) {
 				{ID: events.EventLapEnded, CompetitorID: 2, Time: parseTime("10:02:00.000")},
 				{ID: events.EventFinished, CompetitorID: 2},
 			},
-			validate: func(t *testing.T, tr *Tracker) {
+			validate: func(t *testing.T, tr *Handler) {
 				comp := tr.competitors[2]
 
 				if len(comp.mainLaps.info) != 2 {
@@ -157,7 +157,7 @@ func TestHandler_Notify(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tr := NewTracker(cfg)
+			tr := NewHandler(cfg)
 			for _, event := range tt.events {
 				tr.Notify(event)
 			}
